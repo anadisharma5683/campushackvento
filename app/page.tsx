@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import LoginPage from "@/components/auth/LoginPage";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const router = useRouter();
   const { user, loading } = useAuthStore();

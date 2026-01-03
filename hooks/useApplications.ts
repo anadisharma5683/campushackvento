@@ -43,8 +43,8 @@ export function useApplications(studentId?: string) {
       q,
       async (snapshot) => {
         const data = await Promise.all(
-          snapshot.docs.map(async (doc) => {
-            const appData = { id: doc.id, ...doc.data() } as Application;
+          snapshot.docs.map(async (docSnap) => {
+            const appData = { id: docSnap.id, ...docSnap.data() } as Application;
             // Fetch internship details
             if (appData.internshipId) {
               const internshipRef = doc(db, "internships", appData.internshipId);
