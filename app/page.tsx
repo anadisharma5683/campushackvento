@@ -15,9 +15,9 @@ export default function Home() {
     if (!loading && user) {
       // Redirect based on role
       if (user.role === "admin" || user.role === "tpo") {
-        router.push("/admin");
+        router.replace("/admin");
       } else {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       }
     }
   }, [user, loading, router]);

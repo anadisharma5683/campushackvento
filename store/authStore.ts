@@ -28,7 +28,7 @@ interface AuthState {
   setUser: (user: UserProfile | null) => void;
   setFirebaseUser: (user: FirebaseUser | null) => void;
   setLoading: (loading: boolean) => void;
-  fetchUserProfile: (uid: string) => Promise<void>;
+  fetchUserProfile: (uid: string) => Promise<UserProfile | null>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -38,11 +38,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user }),
   setFirebaseUser: (firebaseUser) => set({ firebaseUser }),
   setLoading: (loading) => set({ loading }),
-  fetchUserProfile: async (uid: string) => {
+  fetchUserProfile: async (uid: string): Promise<UserProfile | null> => {
     try {
       const userDoc = await getDoc(doc(db, "users", uid));
       if (userDoc.exists()) {
-        set({ user: { uid, ...userDoc.data() } as UserProfile });
+        const userProfile = { uid, ...userDoc.data() } as UserProfile;
+        set({ user: userProfile });
+        return userProfile;
       } else {
         // Create default student profile if doesn't exist
         const defaultProfile: UserProfile = {
@@ -53,9 +55,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         };
         await setDoc(doc(db, "users", uid), defaultProfile);
         set({ user: defaultProfile });
+        return defaultProfile;
       }
     } catch (error) {
       console.error("Error fetching user profile:", error);
+      return null;
     }
   },
 }));

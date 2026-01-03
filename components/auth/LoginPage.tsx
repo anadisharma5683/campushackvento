@@ -19,16 +19,21 @@ export default function LoginPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       setFirebaseUser(result.user);
-      await fetchUserProfile(result.user.uid);
       
-      // Get user role to redirect appropriately
-      const userProfile = useAuthStore.getState().user;
-      if (userProfile?.role === "admin" || userProfile?.role === "tpo") {
-        router.push("/admin");
+      // Fetch user profile and wait for it to complete
+      const userProfile = await fetchUserProfile(result.user.uid);
+      
+      if (userProfile) {
+        // Redirect based on role
+        if (userProfile.role === "admin" || userProfile.role === "tpo") {
+          router.replace("/admin");
+        } else {
+          router.replace("/dashboard");
+        }
+        toast.success("Signed in successfully!");
       } else {
-        router.push("/dashboard");
+        toast.error("Failed to load user profile");
       }
-      toast.success("Signed in successfully!");
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast.error(error.message || "Failed to sign in");

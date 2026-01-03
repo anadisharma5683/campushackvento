@@ -12,7 +12,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setFirebaseUser(firebaseUser);
       if (firebaseUser) {
-        await fetchUserProfile(firebaseUser.uid);
+        try {
+          await fetchUserProfile(firebaseUser.uid);
+        } catch (error) {
+          console.error("Error fetching user profile in AuthProvider:", error);
+        }
       } else {
         useAuthStore.getState().setUser(null);
       }
