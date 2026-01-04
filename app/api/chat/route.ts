@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini
+// Initialize Gemini outside the handler to reuse the instance
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(request: NextRequest) {
@@ -37,4 +37,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

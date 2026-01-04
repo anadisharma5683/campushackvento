@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Initialize Gemini outside the handler to reuse the instance
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(request: NextRequest) {
@@ -15,7 +16,13 @@ export async function POST(request: NextRequest) {
 
     const prompt = `You are a professional resume reviewer. Analyze the following resume and provide exactly 3 specific, actionable improvements.
 
-${jobDescription ? `Job Description:\n${jobDescription}\n\n` : ""}Resume Text:\n${resumeText}\n\n
+${jobDescription ? `Job Description:
+${jobDescription}
+
+` : ""}Resume Text:
+${resumeText}
+
+
 
 Provide exactly 3 improvements in this format:
 1. [Improvement 1]
@@ -44,4 +51,3 @@ Be specific and actionable. Focus on content, keywords, and alignment with the j
     );
   }
 }
-
