@@ -123,37 +123,29 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_firebase_measurement_id
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-## Optimizations for Vercel Deployment
+## Deploy on Vercel
 
-This application is optimized for Vercel deployment with the following features:
+This application is optimized for Vercel deployment:
 
-- **Bundle Size Optimization**: Removed unnecessary dependencies and tree-shaken imports
-- **Image Optimization**: Configured for WebP and AVIF formats
-- **API Route Optimization**: Efficient serverless functions with proper error handling
-- **Server Component Optimization**: Proper usage of `dynamic` imports where needed
-- **Caching Headers**: Proper cache control for static assets
-- **Compression**: Gzip compression enabled by default on Vercel
-- **CDN**: Automatic asset optimization and delivery via Vercel's global CDN
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/campus-career-platform)
 
-## Page Connectivity
-
-All pages are properly connected with:
-
-- **Protected Routes**: Role-based access control for admin and student dashboards
-- **Navigation**: Consistent sidebar and mobile navigation across pages
-- **Authentication Flow**: Seamless Google OAuth integration
-- **State Management**: Zustand store for global authentication state
-- **API Integration**: Properly configured API routes for AI features
-
-## Deployment
-
-This app is configured for easy deployment on Vercel:
-
-1. Connect your GitHub repository to Vercel
-2. Set the build command to `npm run build`
-3. Set the output directory to `.next`
+### Manual Deployment Steps:
+1. Push your code to a GitHub repository
+2. Go to [Vercel](https://vercel.com)
+3. Click "New Project" and import your repository
 4. Add your environment variables in the Vercel dashboard
-5. Deploy!
+5. Click "Deploy"
+
+### Vercel Configuration:
+- Build Command: `npm run build`
+- Output Directory: `.next`
+- Development Command: `npm run dev`
+
+The application is configured with:
+- Optimized image formats (WebP, AVIF)
+- Proper API route headers
+- Server component external packages configuration
+- Custom webpack configuration for server compatibility
 
 ## License
 
