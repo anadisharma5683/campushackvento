@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { signInWithPopup, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
@@ -13,10 +13,46 @@ export default function LoginPage() {
   const router = useRouter();
   const { setFirebaseUser, fetchUserProfile } = useAuthStore();
 
+  // Handle redirect result when returning from Google OAuth
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          setFirebaseUser(result.user);
+          
+          // Fetch user profile and wait for it to complete
+          const userProfile = await fetchUserProfile(result.user.uid);
+          
+          if (userProfile) {
+            // Redirect based on role
+            if (userProfile.role === "admin" || userProfile.role === "tpo") {
+              router.replace("/admin");
+            } else {
+              router.replace("/dashboard");
+            }
+            toast.success("Signed in successfully!");
+          } else {
+            toast.error("Failed to load user profile");
+          }
+        }
+      } catch (error: any) {
+        console.error("Redirect result error:", error);
+        toast.error(error.message || "Failed to complete sign in");
+      }
+    };
+
+    // Only try redirect result on initial page load after redirect
+    if (window.location.search.includes('state') && window.location.search.includes('code')) {
+      handleRedirectResult();
+    }
+  }, [router, setFirebaseUser, fetchUserProfile]);
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
+      // First try popup method
       const result = await signInWithPopup(auth, provider);
       setFirebaseUser(result.user);
       
@@ -36,7 +72,19 @@ export default function LoginPage() {
       }
     } catch (error: any) {
       console.error("Sign in error:", error);
-      toast.error(error.message || "Failed to sign in");
+      // If popup is blocked or fails due to COOP/COEP issues, fallback to redirect
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        try {
+          const provider = new GoogleAuthProvider();
+          // Fallback to redirect method
+          await signInWithRedirect(auth, provider);
+        } catch (redirectError: any) {
+          console.error("Redirect sign in error:", redirectError);
+          toast.error(redirectError.message || "Failed to sign in");
+        }
+      } else {
+        toast.error(error.message || "Failed to sign in");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,4 +146,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
